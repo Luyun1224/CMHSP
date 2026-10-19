@@ -189,7 +189,7 @@ footer{color:#fff;font-size:12px;margin-top:18px;opacity:.9}
     <div class="f"><label>級數</label><select id="fLevel"><option value="">全部</option></select></div>
     <div class="f"><label>證書狀態</label><select id="fStatus"><option value="">全部</option></select></div>
     <div class="f"><label>身分</label><select id="fRole"><option value="">全部</option></select></div>
-    <div class="f"><label>搜尋</label><input id="fName" placeholder="姓名"></div>
+    <div class="f"><label>搜尋</label><input id="fName" placeholder="姓名（可輸入全名）"></div>
     <button class="btn clear" id="clear">清除篩選</button>
   </div>
 
@@ -201,10 +201,12 @@ footer{color:#fff;font-size:12px;margin-top:18px;opacity:.9}
 <script>
 /* ========= 設定 ========= */
 const CONFIG = {
+  NAME_SALT: 'chimei-sp',   // 須與 Code.gs 的 NAME_SALT 相同
   GAS_URL: 'https://script.google.com/macros/s/AKfycbw7eOoEFY3At2BVAjxOpTQ-hEeh0ncaoZV3vPpp1Kt-ujE-jk-obJVDcmds3UnDTba6zQ/exec'
 };
 
-/* 範例資料（未設定 GAS_URL 時使用；姓名已遮蔽） */
+/* 範例資料（未設定 GAS_URL 時使用；姓名已遮蔽，nameKey 為全名雜湊） */
+const DEMO_KEYS=["5b755a47392ce096c8fc88ae3e4791469eeec419492b1b710a8e405e4606bb95", "1ef25f3a199f70eff0d696e2db4291d172c1a3a26aa74317938c2e538baf5607", "a1a5a70a6a1238255387a52e9e67f3572ce95deeb5d04daebc71f6efee240d17", "0715eba0b5c3c4bc5e5904a5c4129100fff2af7b3f1d01c49b548c84feb2b0d9", "e153433dd4cca9cbf55dc2b2dc21db7c54a2ada9e664f8b1cb2f005fd6cf2cc9", "ba38874677fb88cbf90af584a572a9441fb038926b1317f1ad8c8d441bf1c65e", "f8afa51f358deb88514807b8cbfe8dc3f068a2e538895d246f51c8b997f0bc4b", "18f52229d0d0cd5df01bdf03af7ab7c90d3ab58b7e0779db17633516116f8ece", "386c94ca4ef824923051993a4445576e96c93b95a3fc3bfd6318bca5452577ea", "dc83427ce5b3b99302f2b689aef3e4e26beecdd2dbb43548beef49dd929384d7", "2f61119b7fc4aeb39cd57ea4ff1b25ac40c1c2487604c7fd099bfb95333d0a93", "5f6a9ee1994638695eea53814e54e860dc90dc423051933c8a97c620d06f21c6", "da65f40158eb46548b6f879f6ce4963b6dda54aa2a1da00d1df72619fdacc6bb", "e7bba7870c0d55ec3795c6fb1019c2a759d4bcddad7a85d917dbcd3fb57d1b17", "0a11fe87491113ce05b5a24ecd65eaf12bad47fe609820bc47979a465996b934", "7844c94710a86cb64b248d1ff40458f5aade95c86e71b8aea50a6cd4398d0fdd", "45679d189fe921eef7c7288c9b7f9921c47735c1e1e20e5ec83210dbcf47e29a", "979a4ed8125e0070e00a58605ecee8728e44dddf37ec43ef30f4e86af5b42565", "bd2971f39a22e2a0820faa73a37a87f399b9a181781bf861ff73521bf9fbd2f9", "3ed56d8f30f24a98ead9293b5a582bcee81003d18341713cd6bff58230d1592a", "db5c28ff4fe9b79e2c8d4f7f4497dfa45d7ccdbed2ee4d68fb276f082ae7e730", "8f10574c743cd8eaa8ef9f3678e91ddac37f7d90ed56fa7b45a718923ebcb102", "9b2943b69320debaaa0f84a8159380ccd5f0a7b69846896602e6bbc7b2da82a6"];
 const DEMO = [
  ['王○承','女',72,'110-112','SP','SP0','未符合','是',14],['黃○玲','女',63,'113-115','SP','SP2','符合','是',14],
  ['康○安','女',69,'113-115','SPT','SP3','符合','是',14],['馮○芳','女',64,'113-115','SPT','SP3','符合','是',14],
@@ -218,8 +220,8 @@ const DEMO = [
  ['林○宏','男',48,'113-115','SP','SP1','符合','是',14],['李○','男',47,'113-115','SP','SP1','符合','是',14],
  ['郭○金','女',47,'113-115','SP','SP1','符合','是',14],['楊○子','女',63,'115-117','SP','SP2','符合','是',12],
  ['林○如','女',43,'114-116','SPT','SP3','符合','是',13]
-].map(([name,gender,age,certPeriod,role,level,status,member,years])=>{
-  const m=certPeriod.match(/(\d+)-(\d+)/);return{name,gender,age,certPeriod,certStart:+m[1],certEnd:+m[2],role,level,status,member,years,firstYear:115-years};
+].map(([name,gender,age,certPeriod,role,level,status,member,years],i)=>{
+  const m=certPeriod.match(/(\d+)-(\d+)/);return{name,gender,age,certPeriod,certStart:+m[1],certEnd:+m[2],role,level,status,member,years,firstYear:115-years,nameKey:DEMO_KEYS[i]};
 });
 
 /* ========= 常數 ========= */
@@ -233,7 +235,7 @@ const LEVEL_DESC={'SP0':'完成基礎訓練','SP1':'取得學會認證','SP2':'�
 
 let ALL=[], ROC=new Date().getFullYear()-1911, sortKey='level', sortDir=1;
 const $=s=>document.querySelector(s);
-const F={gender:'',age:'',level:'',status:'',role:'',name:''};
+const F={gender:'',age:'',level:'',status:'',role:'',name:'',key:''};
 
 /* ========= 載入 ========= */
 function jsonp(url){return new Promise((res,rej)=>{const cb='__sp'+Date.now();const s=document.createElement('script');
@@ -273,12 +275,16 @@ function init(){
   fillSelect('#fRole',[...new Set(ALL.map(r=>r.role).filter(Boolean))].sort());
   render();
 }
-const filtered=()=>ALL.filter(r=>(!F.gender||r.gender===F.gender)&&(!F.age||ageBand(r.age)===F.age)&&(!F.level||r.level===F.level)&&(!F.status||r.status===F.status)&&(!F.role||r.role===F.role)&&(!F.name||r.name.includes(F.name)));
+const filtered=()=>ALL.filter(r=>(!F.gender||r.gender===F.gender)&&(!F.age||ageBand(r.age)===F.age)&&(!F.level||r.level===F.level)&&(!F.status||r.status===F.status)&&(!F.role||r.role===F.role)&&(!F.name||r.name.includes(F.name)||(F.key&&r.nameKey===F.key)));
 function setF(k,v){F[k]=F[k]===v?'':v;syncInputs();render()}
 function syncInputs(){$('#fGender').value=F.gender;$('#fAge').value=F.age;$('#fLevel').value=F.level;$('#fStatus').value=F.status;$('#fRole').value=F.role;$('#fName').value=F.name}
 [['#fGender','gender'],['#fAge','age'],['#fLevel','level'],['#fStatus','status'],['#fRole','role']].forEach(([id,k])=>$(id).addEventListener('change',e=>{F[k]=e.target.value;render()}));
-$('#fName').addEventListener('input',e=>{F.name=e.target.value.trim();render()});
-$('#clear').addEventListener('click',()=>{Object.keys(F).forEach(k=>F[k]='');syncInputs();render()});
+async function sha256(t){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+let nameSeq=0;
+$('#fName').addEventListener('input',async e=>{const q=e.target.value.replace(/\s+/g,'');F.name=q;F.key='';const my=++nameSeq;
+  if(q.length>=2&&window.crypto&&crypto.subtle){try{const k=await sha256(CONFIG.NAME_SALT+'|'+q);if(my!==nameSeq)return;F.key=k}catch(_){}}
+  render()});
+$('#clear').addEventListener('click',()=>{Object.keys(F).forEach(k=>F[k]='');nameSeq++;syncInputs();render()});
 $('#reload').addEventListener('click',load);
 
 /* ========= 繪製 ========= */
@@ -337,7 +343,7 @@ function render(){
   h+=`<div class="grid row2b" style="margin-top:16px">
    <div class="card"><h2>SP 年資分布</h2><p class="sub">平均 ${avgY} 年；首次認證年度 ${firstYears.length?firstYears[0]+'～'+firstYears[firstYears.length-1]+' 年':'—'}</p>
     ${hbars(yb,N,()=> '#1F2B4D',null)}
-    <div class="legend" style="margin:12px 0 0">${firstYears.map(y=>`<span><b style="color:var(--navy)">${y}</b> 年起 ${D.filter(r=>r.firstYear===y).length} 名</span>`).join('')}</div></div>
+    </div>
    <div class="card"><h2>台灣標準化病人協會會員</h2><div class="donut-wrap">
     <div class="donut" style="background:conic-gradient(var(--orange-deep) 0 ${mp2}%, #C9B9A6 ${mp2}% 100%)"><div class="c"><b>${mem}</b><span>名會員</span></div></div>
     <div class="dl"><div><i style="background:var(--orange-deep)"></i>會員 <b>${mem}</b><span>${mp2}%</span></div>
