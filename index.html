@@ -163,11 +163,47 @@ tr:hover td{background:var(--cream-2)}
 #tip{position:fixed;pointer-events:none;background:var(--navy);color:#fff;font-size:12px;padding:6px 10px;border-radius:8px;opacity:0;transition:opacity .1s;z-index:10;white-space:nowrap}
 footer{color:#fff;font-size:12px;margin-top:18px;opacity:.9}
 .loading{color:#fff;font-weight:700;padding:40px 0;text-align:center}
+
+/* ===== 演出紀錄（右上角入口＋全螢幕面板） ===== */
+.hero{position:relative}
+.perf-btn{position:absolute;top:22px;right:26px;z-index:2;display:flex;align-items:center;gap:8px;font:inherit;font-weight:900;font-size:14px;border:0;border-radius:999px;padding:9px 18px;background:var(--orange-deep);color:#fff;cursor:pointer;box-shadow:3px 3px 0 var(--navy)}
+.perf-btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--navy)}
+.perf-btn b{background:#fff;color:var(--orange-deep);border-radius:999px;padding:0 8px;font-size:12px}
+.hero-r{margin-top:34px}
+@media (max-width:900px){.hero-r{margin-top:0}.perf-btn{position:static;margin:0 0 4px auto}.hero-top{padding-top:18px}}
+#perf{position:fixed;inset:0;background:var(--orange);z-index:20;overflow-y:auto;display:none;padding:0 16px 40px}
+#perf.open{display:block}
+body.lock{overflow:hidden}
+.pbar{position:sticky;top:0;z-index:3;background:var(--navy);color:#fff;border-radius:0 0 20px 20px;padding:14px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;max-width:1240px;margin:0 auto}
+.pbar h2{font-size:20px;font-weight:900;margin-right:auto}
+.pbar h2 small{font-size:13px;font-weight:500;color:#C9D0E4;margin-left:8px}
+.pbar select,.pbar input{font:inherit;font-size:14px;border:0;border-radius:10px;padding:6px 10px}
+.pbar label{font-size:12px;color:#C9D0E4;font-weight:700}
+.pbar .x{background:var(--orange-deep)}
+.pwrap{max-width:1240px;margin:18px auto 0}
+.pk{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+@media (max-width:1000px){.pk{grid-template-columns:repeat(3,1fr)}}@media (max-width:560px){.pk{grid-template-columns:repeat(2,1fr)}}
+.pk .hs .n{font-size:clamp(28px,3.2vw,40px)}
+.hs.c4{background:var(--cream);color:var(--navy)}
+.cols{display:flex;align-items:flex-end;gap:6px;height:180px;padding-top:18px}
+.cols .cc{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;cursor:default}
+.cols .cb{width:100%;max-width:42px;border-radius:6px 6px 0 0;background:var(--orange-deep);min-height:2px}
+.cols .cc.cur .cb{background:var(--navy)}
+.cols .cv{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:4px;font-variant-numeric:tabular-nums}
+.cols .cl{font-size:12px;color:var(--ink-2);margin-top:6px;white-space:nowrap}
+.rank{display:flex;flex-direction:column;gap:7px}
+.rank .rr{display:grid;grid-template-columns:28px 70px 1fr 92px;align-items:center;gap:8px;font-size:13px}
+.rank .no{width:24px;height:24px;border-radius:50%;background:var(--cream-2);color:var(--navy);font-weight:900;display:flex;align-items:center;justify-content:center;font-size:12px}
+.rank .rr:nth-child(-n+3) .no{background:var(--orange-deep);color:#fff}
+.rank .nm{font-weight:700;color:var(--navy)}
+.rank .t{background:var(--cream-2);border-radius:6px;height:16px;overflow:hidden}.rank .b{height:100%;background:var(--navy);border-radius:6px}
+.rank .v{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}.rank .v small{color:var(--ink-2);font-weight:500}
 </style>
 </head>
 <body>
 <div class="wrap">
   <section class="hero">
+    <button class="perf-btn" id="openPerf">SP 演出紀錄 <b id="perfBadge">—</b></button>
     <div class="hero-top">
       <div class="hero-l">
         <span class="chip">奇美醫院｜教學部臨床技能中心</span>
@@ -195,6 +231,16 @@ footer{color:#fff;font-size:12px;margin-top:18px;opacity:.9}
 
   <div id="app"><div class="loading">資料載入中…</div></div>
   <footer>資料來源：奇美標準化病人名冊（Google 試算表）。年齡依生日計算至今日；姓名已遮蔽，未輸出生日。</footer>
+</div>
+<div id="perf">
+  <div class="pbar">
+    <h2>SP 演出紀錄<small>年度標準化病人運用概況</small></h2>
+    <div class="f"><label>年度</label> <select id="pYear"></select></div>
+    <div class="f"><label>申請單位</label> <select id="pUnit"><option value="">全部</option></select></div>
+    <div class="f"><label>姓名</label> <input id="pName" placeholder="可輸入全名" style="width:130px"></div>
+    <button class="btn x" id="closePerf">✕ 關閉</button>
+  </div>
+  <div class="pwrap" id="perfBody"></div>
 </div>
 <div id="tip"></div>
 
@@ -224,6 +270,9 @@ const DEMO = [
   const m=certPeriod.match(/(\d+)-(\d+)/);return{name,gender,age,certPeriod,certStart:+m[1],certEnd:+m[2],role,level,status,member,years,firstYear:115-years,nameKey:DEMO_KEYS[i]};
 });
 
+/* 演出紀錄範例（名冊「演出紀錄」分頁前 23 筆） */
+const DEMO_PERF=[{"name": "洪○鶴", "nameKey": "81118aa7623b94d9a32905c82b80f84f26d311ae2d166f5cc0666bb4ab8ac48c", "date": "2020-01-09", "unit": "藥劑部", "course": "OSCE", "detail": "NTG", "hours": 2.5, "fee": 1250, "note": ""}, {"name": "王○承", "nameKey": "5b755a47392ce096c8fc88ae3e4791469eeec419492b1b710a8e405e4606bb95", "date": "2020-01-09", "unit": "藥劑部", "course": "OSCE", "detail": "氣喘", "hours": 2.5, "fee": 1250, "note": ""}, {"name": "陳○斌", "nameKey": "cc765017e179f3e2dc29d383fc7308b82cb5789437d7831680ff0e2b685c35fb", "date": "2020-01-09", "unit": "藥劑部", "course": "OSCE", "detail": "高血脂", "hours": 2.5, "fee": 1250, "note": ""}, {"name": "張○儀", "nameKey": "9f610f5a4195b4080d3ab835e3059d331d65ccecf907d105a7536915cf1d31fb", "date": "2020-01-09", "unit": "藥劑部", "course": "OSCE", "detail": "Fosamax", "hours": 2.5, "fee": 1250, "note": ""}, {"name": "杜○貞", "nameKey": "98dc195ebe8507103e68ddcddc373a28cbfe010dadb5be43f5f34ec5f9541df0", "date": "2020-01-09", "unit": "藥劑部", "course": "OSCE", "detail": "發燒", "hours": 2.5, "fee": 1250, "note": ""}, {"name": "唐○鎧", "nameKey": "45679d189fe921eef7c7288c9b7f9921c47735c1e1e20e5ec83210dbcf47e29a", "date": "2020-01-09", "unit": "藥劑部", "course": "OSCE", "detail": "Wafarin", "hours": 2.5, "fee": 1250, "note": ""}, {"name": "郭○鴻", "nameKey": "1142d13b890279dc9cc23be1f7204038d4bbf94d22af62a0ab25c04b21c8b837", "date": "2020-01-14", "unit": "藥劑部", "course": "OSCE", "detail": "NTG", "hours": 1.5, "fee": 750, "note": ""}, {"name": "李○娟", "nameKey": "6660773c4d078f84862e315cc60e99543533e615df6b04ff1cec254a0aa156dc", "date": "2020-01-14", "unit": "藥劑部", "course": "OSCE", "detail": "Fosamax", "hours": 1.5, "fee": 750, "note": ""}, {"name": "康○安", "nameKey": "a1a5a70a6a1238255387a52e9e67f3572ce95deeb5d04daebc71f6efee240d17", "date": "2020-01-14", "unit": "藥劑部", "course": "OSCE", "detail": "婦科", "hours": 1.5, "fee": 750, "note": ""}, {"name": "洪○婷", "nameKey": "05d8010aef2695412e169e9bd844c534aa676278b25370cc769db0df95050b5f", "date": "2020-01-14", "unit": "藥劑部", "course": "OSCE", "detail": "發燒", "hours": 1.5, "fee": 750, "note": ""}, {"name": "王○智", "nameKey": "ddd54d9bf98ebf47b6f3e54f30a8b8e5e8f91b4062fd20aaa0677f0ad17156c2", "date": "2020-01-14", "unit": "藥劑部", "course": "OSCE", "detail": "TB", "hours": 1.5, "fee": 750, "note": ""}, {"name": "蔡○來", "nameKey": "67377a0db337dc96ce74b341e7c1367f49d6e3c82f0b78df26240b7a4a645b3e", "date": "2020-01-14", "unit": "藥劑部", "course": "OSCE", "detail": "Wafarin", "hours": 1.5, "fee": 750, "note": ""}, {"name": "陳○達", "nameKey": "02fd2f67db3413da27c32d54d03e4d2a14c342c699dbd954b1a46f299a017e72", "date": "2020-01-20", "unit": "護理部", "course": "OSCE", "detail": "輸血", "hours": null, "fee": null, "note": ""}, {"name": "鄧○嘉", "nameKey": "979a4ed8125e0070e00a58605ecee8728e44dddf37ec43ef30f4e86af5b42565", "date": "2020-01-20", "unit": "護理部", "course": "OSCE", "detail": "輸血", "hours": null, "fee": null, "note": ""}, {"name": "蔡○義", "nameKey": "8504fc1bb9152cffdf3dbdbdd01d6883a02115f1699b65976b75212d2da08d8c", "date": "2020-01-21", "unit": "護理部", "course": "OSCE", "detail": "pig tail", "hours": null, "fee": null, "note": ""}, {"name": "李○安", "nameKey": "8e00a0239b97b43d2261dd34803fc1e71be5954add13256e57e94b21daa40f7f", "date": "2020-01-21", "unit": "護理部", "course": "OSCE", "detail": "疼痛", "hours": null, "fee": null, "note": ""}, {"name": "黃○玲", "nameKey": "1ef25f3a199f70eff0d696e2db4291d172c1a3a26aa74317938c2e538baf5607", "date": "2020-01-13", "unit": "聽力", "course": "OSCE", "detail": "OSCE", "hours": 1.5, "fee": 750, "note": ""}, {"name": "馮○芝", "nameKey": "7a87fdf5ae944bcee0a41344b7bc6194f7990b18d1ea17cb72b3b3aebe1a4809", "date": "2020-01-13", "unit": "聽力", "course": "OSCE", "detail": "OSCE", "hours": 1.5, "fee": 750, "note": ""}, {"name": "郭○貞", "nameKey": "dc7fda2be44dec8a60b4952f21cfda3b045e5ff8c41fc03b0e5ae07b63215852", "date": "2020-01-03", "unit": "教學中心", "course": "臨床技能", "detail": "PGY TRM", "hours": 1.5, "fee": 750, "note": ""}, {"name": "盧○美", "nameKey": "5f6a9ee1994638695eea53814e54e860dc90dc423051933c8a97c620d06f21c6", "date": "2020-01-03", "unit": "教學中心", "course": "臨床技能", "detail": "PGY TRM", "hours": 1.5, "fee": 750, "note": ""}, {"name": "黃○玲", "nameKey": "1ef25f3a199f70eff0d696e2db4291d172c1a3a26aa74317938c2e538baf5607", "date": "2020-01-04", "unit": "職能治療", "course": "OSCE", "detail": "職能治療-骨折", "hours": 1, "fee": 500, "note": ""}, {"name": "郭○鴻", "nameKey": "1142d13b890279dc9cc23be1f7204038d4bbf94d22af62a0ab25c04b21c8b837", "date": "2020-01-04", "unit": "職能治療", "course": "OSCE", "detail": "職能治療-中風", "hours": 1, "fee": 500, "note": ""}, {"name": "鄭○卿", "nameKey": "4e066f62daffd47ee31bfcd8695db359fce3f5a50a8022fa0c4636b3f2f36095", "date": "2020-01-04", "unit": "職能治療", "course": "OSCE", "detail": "職能治療-腦麻", "hours": 1, "fee": 500, "note": ""}];
+
 /* ========= 常數 ========= */
 const AGE_BANDS=[{k:'70 歲以上',lo:70,hi:200},{k:'60–69 歲',lo:60,hi:69},{k:'50–59 歲',lo:50,hi:59},{k:'40–49 歲',lo:40,hi:49},{k:'40 歲以下',lo:0,hi:39}];
 const ageBand=a=>a==null?'未填':(AGE_BANDS.find(b=>a>=b.lo&&a<=b.hi)||{}).k;
@@ -233,7 +282,7 @@ const STATUS_BG={'符合':'#CDEBD9','待展延':'#FFE2B8','未符合':'#E9E3DC',
 const LEVEL_COLOR={'SP0':'#C9B9A6','SP1':'#F4A46A','SP2':'#D9561A','SP3':'#1F2B4D'};
 const LEVEL_DESC={'SP0':'完成基礎訓練','SP1':'取得學會認證','SP2':'認證＋年演出≥3次','SP3':'標準化病人訓練師'};
 
-let ALL=[], ROC=new Date().getFullYear()-1911, sortKey='level', sortDir=1;
+let PERF=[], PCOUNT={}, ALL=[], ROC=new Date().getFullYear()-1911, sortKey='level', sortDir=1;
 const $=s=>document.querySelector(s);
 const F={gender:'',age:'',level:'',status:'',role:'',name:'',key:''};
 
@@ -245,8 +294,8 @@ function jsonp(url){return new Promise((res,rej)=>{const cb='__sp'+Date.now();co
   s.src=url+(url.includes('?')?'&':'?')+'callback='+cb+'&t='+Date.now();document.body.appendChild(s);})}
 async function load(){
   $('#updated').textContent='資料載入中…';
-  if(!CONFIG.GAS_URL){ALL=DEMO;$('#demo').style.display='block';$('#updated').textContent='範例資料';init();return}
-  try{const d=await jsonp(CONFIG.GAS_URL);if(!d.ok)throw new Error(d.error);ALL=d.rows;ROC=d.rocYear||ROC;
+  if(!CONFIG.GAS_URL){ALL=DEMO;PERF=DEMO_PERF;$('#demo').style.display='block';$('#updated').textContent='範例資料';init();return}
+  try{const d=await jsonp(CONFIG.GAS_URL);if(!d.ok)throw new Error(d.error);ALL=d.rows;PERF=d.perf||[];ROC=d.rocYear||ROC;
     $('#updated').textContent='更新：'+d.updated;init();}
   catch(e){$('#app').innerHTML='<div class="loading">讀取失敗：'+e.message+'</div>';$('#updated').textContent='讀取失敗'}
 }
@@ -268,6 +317,7 @@ function renderHero(){
   document.querySelectorAll('.stop').forEach(el=>el.addEventListener('click',()=>{setF('level',el.dataset.lv);document.querySelector('.sec').scrollIntoView({behavior:'smooth'})}));
 }
 function init(){
+  prepPerf();
   renderHero();
   fillSelect('#fAge',AGE_BANDS.map(b=>b.k));
   fillSelect('#fLevel',[...new Set(ALL.map(r=>r.level).filter(Boolean))].sort());
@@ -390,18 +440,90 @@ function hbars(items,N,color,fkey,desc){
     <span class="k">${esc(i.k)}</span><div class="t"><div class="b" style="width:${i.n/mx*100}%;background:${color(i)}"></div></div>
     <span class="v">${i.n} <small>${pct(i.n,N)}%</small></span></div>`).join('')}</div>`;
 }
-const COLS=[['name','姓名'],['gender','性別'],['age','年齡'],['band','年齡層'],['role','身分'],['level','級數'],['certPeriod','認證效期'],['status','證書狀態'],['years','SP 年資'],['member','協會會員']];
+const COLS=[['name','姓名'],['perfN','本年演出'],['gender','性別'],['age','年齡'],['band','年齡層'],['role','身分'],['level','級數'],['certPeriod','認證效期'],['status','證書狀態'],['years','SP 年資'],['member','協會會員']];
 function tableHTML(D){
-  const rows=D.map(r=>({...r,band:ageBand(r.age)}));
+  const rows=D.map(r=>({...r,band:ageBand(r.age),perfN:PCOUNT[r.nameKey]||0}));
   rows.sort((a,b)=>{const x=a[sortKey],y=b[sortKey];if(x==null)return 1;if(y==null)return -1;return (typeof x==='number'?x-y:String(x).localeCompare(String(y),'zh-Hant'))*sortDir});
   return `<table><thead><tr>${COLS.map(([k,l])=>`<th data-k="${k}">${l}<span class="s">${sortKey===k?(sortDir>0?'▲':'▼'):'↕'}</span></th>`).join('')}</tr></thead><tbody>
-  ${rows.map(r=>`<tr><td>${esc(r.name)}</td><td>${esc(r.gender)}</td><td class="num">${r.age??''}</td><td>${esc(r.band)}</td><td>${esc(r.role)}</td><td>${esc(r.level)}</td><td>${esc(r.certPeriod)}</td>
+  ${rows.map(r=>`<tr><td>${esc(r.name)}</td><td class="num">${r.perfN}</td><td>${esc(r.gender)}</td><td class="num">${r.age??''}</td><td>${esc(r.band)}</td><td>${esc(r.role)}</td><td>${esc(r.level)}</td><td>${esc(r.certPeriod)}</td>
    <td><span class="st" style="background:${STATUS_BG[r.status]||'#eee'};color:${STATUS_COLOR[r.status]||'#555'}">${esc(r.status)}</span></td><td class="num">${r.years??''}</td><td>${esc(r.member)}</td></tr>`).join('')}
   </tbody></table>`;
 }
 function bindTips(){const tip=$('#tip');document.querySelectorAll('[data-tip]').forEach(el=>{
   el.addEventListener('mousemove',e=>{tip.textContent=el.dataset.tip;tip.style.opacity=1;const x=Math.min(e.clientX+14,innerWidth-tip.offsetWidth-8);tip.style.left=x+'px';tip.style.top=(e.clientY+14)+'px'});
   el.addEventListener('mouseleave',()=>tip.style.opacity=0)})}
+
+
+/* ========= 演出紀錄 ========= */
+const P={year:null,unit:'',name:'',key:''};
+const rocOf=d=>+d.slice(0,4)-1911;
+const fmt=n=>n==null?'—':Number(n).toLocaleString('zh-TW',{maximumFractionDigits:1});
+function prepPerf(){
+  PERF.forEach(p=>{p.roc=rocOf(p.date);p.m=+p.date.slice(5,7)});
+  const years=[...new Set(PERF.map(p=>p.roc))].sort((a,b)=>b-a);
+  if(P.year==null||!years.includes(P.year))P.year=years.includes(ROC)?ROC:years[0];
+  const ys=$('#pYear');ys.innerHTML=years.map(y=>`<option value="${y}">${y} 年（${y+1911}）</option>`).join('');if(P.year!=null)ys.value=P.year;
+  PCOUNT={};PERF.filter(p=>p.roc===ROC).forEach(p=>{PCOUNT[p.nameKey]=(PCOUNT[p.nameKey]||0)+1});
+  const n=PERF.filter(p=>p.roc===ROC).length;$('#perfBadge').textContent=years.length?`${ROC} 年 ${n} 人次`:'無資料';
+  const us=[...new Set(PERF.map(p=>p.unit).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'zh-Hant'));
+  const u=$('#pUnit');u.length=1;us.forEach(x=>u.add(new Option(x,x)));u.value=us.includes(P.unit)?P.unit:'';
+}
+function openPerf(){$('#perf').classList.add('open');document.body.classList.add('lock');renderPerf()}
+function closePerf(){$('#perf').classList.remove('open');document.body.classList.remove('lock')}
+$('#openPerf').addEventListener('click',openPerf);$('#closePerf').addEventListener('click',closePerf);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePerf()});
+$('#pYear').addEventListener('change',e=>{P.year=+e.target.value;renderPerf()});
+$('#pUnit').addEventListener('change',e=>{P.unit=e.target.value;renderPerf()});
+let pSeq=0;$('#pName').addEventListener('input',async e=>{const q=e.target.value.replace(/\s+/g,'');P.name=q;P.key='';const my=++pSeq;
+  if(q.length>=2&&window.crypto&&crypto.subtle){try{const k=await sha256(CONFIG.NAME_SALT+'|'+q);if(my!==pSeq)return;P.key=k}catch(_){}}renderPerf()});
+let pSort='date',pDir=-1;
+function renderPerf(){
+  const body=$('#perfBody');
+  if(!PERF.length){body.innerHTML='<div class="card">尚未讀取到「演出紀錄」分頁資料。</div>';return}
+  const nameOk=p=>!P.name||p.name.includes(P.name)||(P.key&&p.nameKey===P.key);
+  const Y=PERF.filter(p=>p.roc===P.year&&(!P.unit||p.unit===P.unit)&&nameOk(p));
+  const sp=new Set(Y.map(p=>p.nameKey)).size;
+  const hrs=Y.reduce((a,p)=>a+(p.hours||0),0), fee=Y.reduce((a,p)=>a+(p.fee||0),0);
+  const sessions=new Set(Y.map(p=>p.date+'|'+p.unit+'|'+p.course)).size;
+  const units=new Set(Y.map(p=>p.unit).filter(Boolean)).size;
+  let h=`<div class="pk">
+   <div class="hs c1"><span class="t">演出人次</span><div class="n">${Y.length}<small>人次</small></div><div class="d">${P.year} 年</div></div>
+   <div class="hs c2"><span class="t">參與 SP</span><div class="n">${sp}<small>名</small></div><div class="d">平均每人 ${sp?(Y.length/sp).toFixed(1):0} 次</div></div>
+   <div class="hs c3"><span class="t">演出時數</span><div class="n">${fmt(hrs)}<small>小時</small></div><div class="d">平均每人次 ${Y.length?(hrs/Y.length).toFixed(1):0} 小時</div></div>
+   <div class="hs c4"><span class="t">演出場次</span><div class="n">${sessions}<small>場</small></div><div class="d">同日同單位同課程計一場</div></div>
+   <div class="hs c4"><span class="t">申請單位</span><div class="n">${units}<small>個</small></div><div class="d">跨單位運用</div></div>
+   <div class="hs c4"><span class="t">演出費用</span><div class="n" style="font-size:clamp(24px,2.6vw,32px)">${fee?'$'+fmt(fee):'—'}</div><div class="d">領取費用合計</div></div></div>`;
+
+  // 歷年趨勢 + 月別
+  const allY=[...new Set(PERF.map(p=>p.roc))].sort((a,b)=>a-b);
+  const byYear=allY.map(y=>({k:y,n:PERF.filter(p=>p.roc===y&&(!P.unit||p.unit===P.unit)&&nameOk(p)).length}));
+  const mxY=Math.max(1,...byYear.map(x=>x.n));
+  const byM=[...Array(12)].map((_,i)=>({k:i+1,n:Y.filter(p=>p.m===i+1).length,hr:Y.filter(p=>p.m===i+1).reduce((a,p)=>a+(p.hours||0),0)}));
+  const mxM=Math.max(1,...byM.map(x=>x.n));
+  h+=`<div class="grid row2" style="margin-top:16px">
+   <div class="card"><h2>${P.year} 年各月演出人次</h2><div class="cols">${byM.map(x=>`<div class="cc" data-tip="${x.k} 月：${x.n} 人次、${fmt(x.hr)} 小時"><span class="cv">${x.n||''}</span><div class="cb" style="height:${x.n/mxM*100}%"></div><span class="cl">${x.k}月</span></div>`).join('')}</div></div>
+   <div class="card"><h2>歷年演出人次</h2><div class="cols">${byYear.map(x=>`<div class="cc ${x.k===P.year?'cur':''}" data-tip="${x.k} 年：${x.n} 人次"><span class="cv">${x.n}</span><div class="cb" style="height:${x.n/mxY*100}%"></div><span class="cl">${x.k}</span></div>`).join('')}</div><p class="sub" style="margin:10px 0 0">深藍為目前所選年度</p></div></div>`;
+
+  // 申請單位 / 課程 / 排行
+  const grp=(key)=>{const m={};Y.forEach(p=>{const k=p[key]||'未填';m[k]=(m[k]||0)+1});return Object.entries(m).map(([k,n])=>({k,n})).sort((a,b)=>b.n-a.n)};
+  const unitsArr=grp('unit').slice(0,12), courseArr=grp('course').slice(0,12);
+  const per={};Y.forEach(p=>{const o=per[p.nameKey]||(per[p.nameKey]={name:p.name,n:0,h:0});o.n++;o.h+=p.hours||0});
+  const top=Object.values(per).sort((a,b)=>b.n-a.n||b.h-a.h).slice(0,10);const mxT=Math.max(1,...top.map(t=>t.n));
+  h+=`<div class="grid row3" style="margin-top:16px">
+   <div class="card"><h2>申請單位</h2><p class="sub">依演出人次排序（前 12）</p>${hbars(unitsArr,Y.length,()=> '#D9561A',null)}</div>
+   <div class="card"><h2>課程類別</h2><p class="sub">依「課程名稱」欄</p>${hbars(courseArr,Y.length,()=> '#1F2B4D',null)}</div>
+   <div class="card"><h2>SP 演出次數排行</h2><p class="sub">前 10 名｜人次與時數</p><div class="rank">${top.map((t,i)=>`<div class="rr"><span class="no">${i+1}</span><span class="nm">${esc(t.name)}</span><div class="t"><div class="b" style="width:${t.n/mxT*100}%"></div></div><span class="v">${t.n} 次 <small>${fmt(t.h)} 時</small></span></div>`).join('')}</div></div></div>`;
+
+  // 明細
+  const rows=[...Y].sort((a,b)=>{const x=a[pSort],y=b[pSort];if(x==null)return 1;if(y==null)return -1;return (typeof x==='number'?x-y:String(x).localeCompare(String(y),'zh-Hant'))*pDir});
+  const PC=[['date','演出日期'],['name','姓名'],['unit','申請單位'],['course','課程名稱'],['detail','課程名單（細節）'],['hours','時數'],['fee','費用'],['note','備註']];
+  h+=`<div class="card" style="margin-top:16px"><h2>演出明細 <span class="count">${Y.length} 筆</span></h2><div class="tbl-wrap"><table><thead><tr>${PC.map(([k,l])=>`<th data-pk="${k}">${l}<span class="s">${pSort===k?(pDir>0?'▲':'▼'):'↕'}</span></th>`).join('')}</tr></thead><tbody>
+   ${rows.map(p=>`<tr><td>${p.roc}/${p.date.slice(5).replace('-','/')}</td><td>${esc(p.name)}</td><td>${esc(p.unit)}</td><td>${esc(p.course)}</td><td>${esc(p.detail)}</td><td class="num">${fmt(p.hours)}</td><td class="num">${p.fee==null?'—':fmt(p.fee)}</td><td>${esc(p.note)}</td></tr>`).join('')}
+  </tbody></table></div></div>`;
+  body.innerHTML=h;
+  body.querySelectorAll('th[data-pk]').forEach(el=>el.addEventListener('click',()=>{const k=el.dataset.pk;pDir=pSort===k?-pDir:(k==='date'?-1:1);pSort=k;renderPerf()}));
+  bindTips();
+}
 
 load();
 </script>
