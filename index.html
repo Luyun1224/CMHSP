@@ -23,40 +23,46 @@ html,body{overflow-x:hidden}
 body{font-family:'Noto Sans TC',system-ui,sans-serif;background:var(--orange);color:var(--ink);font-size:15px;line-height:1.5;padding:0 16px 40px}
 .wrap{max-width:1240px;margin:0 auto}
 
-/* Hero 主視覺 */
-.hero{position:relative;padding:34px 0 22px;display:grid;grid-template-columns:1.15fr 1fr;gap:22px 28px;align-items:center}
-.hero::before{content:"";position:absolute;right:-60px;top:-40px;width:360px;height:360px;border-radius:50%;background:rgba(255,244,227,.14);pointer-events:none}
-.hero::after{content:"";position:absolute;left:-90px;bottom:90px;width:220px;height:220px;border-radius:50%;border:26px solid rgba(31,43,77,.08);pointer-events:none}
-.hero-l,.hero-r,.route{position:relative;z-index:1}
+/* Hero 主視覺：米色主色塊＋三色數字塊＋深藍路線帶 */
+.hero{margin-top:28px;background:var(--cream);border-radius:28px;overflow:hidden}
+.hero-top{display:grid;grid-template-columns:1.1fr 1fr;gap:24px;align-items:center;padding:30px 32px 28px}
 .chip{display:inline-block;background:var(--navy);color:#fff;font-weight:700;font-size:13px;padding:4px 14px;border-radius:999px;letter-spacing:.05em}
-.hero h1{font-weight:900;font-size:clamp(34px,5.6vw,64px);line-height:1.12;color:#fff;margin:14px 0 8px;letter-spacing:.03em;text-shadow:4px 4px 0 var(--navy)}
-.hero h1 .hl{display:inline-block;background:var(--cream);color:var(--orange-deep);text-shadow:none;padding:0 14px;border-radius:14px;margin-right:10px;box-shadow:4px 4px 0 var(--navy)}
-.hero .en{font-weight:900;font-size:13px;letter-spacing:.32em;color:var(--navy)}
-.meta{display:flex;align-items:center;gap:10px;color:#fff;font-size:13px;margin-top:16px;flex-wrap:wrap}
-.meta #updated{background:rgba(31,43,77,.18);border-radius:999px;padding:5px 12px;font-weight:700}
+.hero h1{font-weight:900;font-size:clamp(32px,4.6vw,56px);line-height:1.15;color:var(--navy);margin:14px 0 6px;letter-spacing:.03em}
+.hero h1 .hl{display:inline-block;background:var(--orange-deep);color:#fff;padding:0 14px;border-radius:14px;margin-right:10px}
+.hero .en{font-weight:900;font-size:12px;letter-spacing:.3em;color:var(--orange-deep)}
+.meta{display:flex;align-items:center;gap:10px;font-size:13px;margin-top:18px;flex-wrap:wrap}
+.meta #updated{background:var(--cream-2);color:var(--ink-2);border-radius:999px;padding:6px 14px;font-weight:700}
 .hero-r{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.hs{background:var(--cream);border-radius:22px;padding:16px 14px 14px;box-shadow:5px 5px 0 var(--navy);text-align:center}
-.hs .t{font-size:13px;font-weight:900;color:#fff;background:var(--orange-deep);border-radius:999px;display:inline-block;padding:2px 12px}
-.hs .n{font-size:clamp(34px,4.2vw,50px);font-weight:900;color:var(--navy);line-height:1.1;margin-top:8px;font-variant-numeric:tabular-nums}
-.hs .n small{font-size:16px;margin-left:2px}
-.hs .d{font-size:12px;color:var(--ink-2);margin-top:2px}
-.route{grid-column:1/-1;background:var(--cream);border-radius:24px;padding:18px 22px 20px;box-shadow:5px 5px 0 var(--navy)}
-.route h3{font-size:15px;font-weight:900;color:var(--navy);margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.route h3 span{font-size:12px;font-weight:500;color:var(--ink-2)}
+.hs{border-radius:20px;padding:18px 12px 16px;text-align:center;color:#fff}
+.hs.c1{background:var(--orange-deep)}.hs.c2{background:var(--navy)}.hs.c3{background:#F4A46A;color:var(--navy)}
+.hs .t{font-size:13px;font-weight:900;opacity:.95}
+.hs .n{font-size:clamp(34px,4vw,48px);font-weight:900;line-height:1.1;margin-top:6px;font-variant-numeric:tabular-nums}
+.hs .n small{font-size:15px;margin-left:2px}
+.hs .d{font-size:12px;margin-top:4px;opacity:.9}
+.route{background:var(--navy);color:#fff;padding:18px 32px 22px}
+.route h3{font-size:15px;font-weight:900;margin-bottom:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.route h3 span{font-size:12px;font-weight:500;color:#C9D0E4}
 .stops{display:grid;grid-template-columns:repeat(4,1fr);position:relative}
-.stops::before{content:"";position:absolute;left:12.5%;right:12.5%;top:27px;border-top:4px dashed var(--orange-deep)}
-.stop{text-align:center;position:relative;cursor:pointer;padding:0 6px}
-.stop .dot{width:58px;height:58px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;color:#fff;border:4px solid var(--cream);box-shadow:0 0 0 3px var(--navy);position:relative}
-.stop:hover .dot{transform:translateY(-2px)}
-.stop .nm{font-size:13px;font-weight:700;color:var(--navy);margin-top:8px}
-.stop .c{font-size:28px;font-weight:900;color:var(--navy);line-height:1.1;font-variant-numeric:tabular-nums}
-.stop .c small{font-size:13px;margin-left:2px}
-.stop .p{font-size:12px;color:var(--ink-2)}
-@media (max-width:900px){.hero{grid-template-columns:1fr}}
-@media (max-width:560px){.hero-r{grid-template-columns:1fr 1fr 1fr;gap:8px}.hs{padding:12px 6px}.hs .t{font-size:11px;padding:2px 8px}.stops{grid-template-columns:repeat(2,1fr);row-gap:18px}.stops::before{display:none}}
+.stops::before{content:"";position:absolute;left:12.5%;right:12.5%;top:25px;border-top:3px dashed rgba(255,244,227,.45)}
+.stop{position:relative;cursor:pointer;display:flex;align-items:center;gap:12px;justify-content:center}
+.stop .dot{width:52px;height:52px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#fff;border:3px solid var(--cream);position:relative}
+.stop:hover .dot{transform:scale(1.06)}
+.stop .tx{display:flex;flex-direction:column;line-height:1.2;background:var(--navy);padding-right:6px;position:relative}
+.stop .nm{font-size:12px;color:#C9D0E4;font-weight:700}
+.stop .c{font-size:26px;font-weight:900;font-variant-numeric:tabular-nums}
+.stop .c small{font-size:12px;margin-left:2px;font-weight:700}
+.stop .p{font-size:12px;color:#C9D0E4;font-weight:500;margin-left:6px}
+@media (max-width:900px){.hero-top{grid-template-columns:1fr}}
+@media (max-width:640px){.hero-top{padding:22px 18px}.route{padding:16px 18px}.hero-r{gap:8px}.hs{padding:12px 4px}.hs .t{font-size:11px}.stops{grid-template-columns:repeat(2,1fr);row-gap:14px}.stops::before{display:none}.stop{justify-content:flex-start}}
+
+/* 區段標籤 */
+.sec{display:flex;align-items:center;gap:12px;margin:30px 0 14px}
+.sec span{background:var(--navy);color:#fff;font-weight:900;font-size:16px;padding:6px 18px;border-radius:999px}
+.sec small{color:#fff;font-size:13px;font-weight:700;opacity:.9}
+
 .btn{font:inherit;font-weight:700;font-size:13px;border:0;border-radius:999px;padding:8px 16px;background:var(--navy);color:#fff;cursor:pointer}
 .btn:hover{background:var(--navy-2)}
-.demo{background:var(--cream);color:var(--orange-deep);border-radius:12px;padding:10px 14px;font-weight:700;font-size:13px;margin-bottom:14px;display:none}
+.demo{background:var(--cream);color:var(--orange-deep);border-radius:12px;padding:10px 14px;font-weight:700;font-size:13px;margin-top:18px;display:none}
 
 /* Filters */
 .filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--navy);border-radius:18px;padding:12px 14px;margin-bottom:16px}
@@ -74,8 +80,6 @@ body{font-family:'Noto Sans TC',system-ui,sans-serif;background:var(--orange);co
 .row3{grid-template-columns:repeat(3,1fr)}
 .row2b{grid-template-columns:1fr 1fr}
 @media (max-width:1000px){.row2b{grid-template-columns:1fr}}
-.sec{color:#fff;font-weight:900;font-size:18px;margin:26px 0 12px;display:flex;align-items:center;gap:10px}
-.sec::after{content:"";flex:1;border-top:3px dashed rgba(255,244,227,.55)}
 @media (max-width:1000px){.kpis{grid-template-columns:repeat(2,1fr)}.row2,.row3{grid-template-columns:1fr}}
 @media (max-width:560px){.kpis{grid-template-columns:repeat(2,1fr)}}
 .card{background:var(--cream);border-radius:20px;padding:18px 20px;min-width:0}
@@ -164,19 +168,21 @@ footer{color:#fff;font-size:12px;margin-top:18px;opacity:.9}
 <body>
 <div class="wrap">
   <section class="hero">
-    <div class="hero-l">
-      <span class="chip">奇美醫院｜教學部臨床技能中心</span>
-      <h1><span class="hl">SP</span>標準化病人<br>人力儀表板</h1>
-      <div class="en">STANDARDIZED PATIENT DASHBOARD</div>
-      <div class="meta"><span id="updated">資料載入中…</span><button class="btn" id="reload">重新整理</button></div>
+    <div class="hero-top">
+      <div class="hero-l">
+        <span class="chip">奇美醫院｜教學部臨床技能中心</span>
+        <h1><span class="hl">SP</span>標準化病人<br>人力儀表板</h1>
+        <div class="en">STANDARDIZED PATIENT DASHBOARD</div>
+        <div class="meta"><span id="updated">資料載入中…</span><button class="btn" id="reload">重新整理</button></div>
+      </div>
+      <div class="hero-r" id="heroStats"></div>
     </div>
-    <div class="hero-r" id="heroStats"></div>
     <div class="route" id="route"></div>
   </section>
 
   <div class="demo" id="demo">目前顯示範例資料（名冊前 23 筆）。請於程式碼最上方 CONFIG.GAS_URL 填入 GAS 部署網址，即會讀取名冊全部資料。</div>
 
-  <div class="sec">數據總覽</div>
+  <div class="sec"><span>數據總覽</span><small>以下圖表皆依篩選條件即時更新</small></div>
   <div class="filters">
     <div class="f"><label>性別</label><select id="fGender"><option value="">全部</option><option>男</option><option>女</option></select></div>
     <div class="f"><label>年齡層</label><select id="fAge"><option value="">全部</option></select></div>
@@ -250,13 +256,13 @@ function renderHero(){
   const ys=ALL.map(r=>r.years).filter(v=>v!=null);const avgY=ys.length?(ys.reduce((a,b)=>a+b,0)/ys.length).toFixed(1):'—';
   const maxY=ys.length?Math.max(...ys):'—';
   $('#heroStats').innerHTML=`
-   <div class="hs"><span class="t">SP 總人數</span><div class="n">${N}<small>名</small></div><div class="d">有效認證 ${ALL.filter(r=>r.status==='符合').length} 名</div></div>
-   <div class="hs"><span class="t">協會會員</span><div class="n">${mem}<small>名</small></div><div class="d">占 ${pct(mem,N)}%</div></div>
-   <div class="hs"><span class="t">平均年資</span><div class="n">${avgY}<small>年</small></div><div class="d">最資深 ${maxY} 年</div></div>`;
-  const stops=[['SP0','基礎訓練','#C9B9A6'],['SP1','取得學會認證','#F4A46A'],['SP2','年演出 ≥ 3 次','#D9561A'],['SP3','SP 訓練師','#1F2B4D']];
-  $('#route').innerHTML=`<h3>SP 培育路線<span>完成基礎訓練 → 取得認證 → 持續演出 → 成為訓練師｜點選站點可篩選</span></h3>
+   <div class="hs c1"><span class="t">SP 總人數</span><div class="n">${N}<small>名</small></div><div class="d">有效認證 ${ALL.filter(r=>r.status==='符合').length} 名</div></div>
+   <div class="hs c2"><span class="t">協會會員</span><div class="n">${mem}<small>名</small></div><div class="d">占 ${pct(mem,N)}%</div></div>
+   <div class="hs c3"><span class="t">平均年資</span><div class="n">${avgY}<small>年</small></div><div class="d">最資深 ${maxY} 年</div></div>`;
+  const stops=[['SP0','基礎訓練','#8A8178'],['SP1','取得學會認證','#F4A46A'],['SP2','年演出 ≥ 3 次','#D9561A'],['SP3','SP 訓練師','#F07A2A']];
+  $('#route').innerHTML=`<h3>SP 培育路線<span>基礎訓練 → 取得認證 → 持續演出 → 訓練師｜點選站點可篩選</span></h3>
    <div class="stops">${stops.map(([k,nm,c])=>{const n=ALL.filter(r=>r.level===k).length;
-     return `<div class="stop" data-lv="${k}" data-tip="${k}｜${nm}：${n} 名"><div class="dot" style="background:${c}">${k}</div><div class="nm">${nm}</div><div class="c">${n}<small>名</small></div><div class="p">${pct(n,N)}%</div></div>`}).join('')}</div>`;
+     return `<div class="stop" data-lv="${k}" data-tip="${k}｜${nm}：${n} 名（${pct(n,N)}%）"><div class="dot" style="background:${c}">${k}</div><div class="tx"><span class="nm">${nm}</span><span class="c">${n}<small>名</small><span class="p">${pct(n,N)}%</span></span></div></div>`}).join('')}</div>`;
   document.querySelectorAll('.stop').forEach(el=>el.addEventListener('click',()=>{setF('level',el.dataset.lv);document.querySelector('.sec').scrollIntoView({behavior:'smooth'})}));
 }
 function init(){
@@ -307,7 +313,7 @@ function render(){
   // Pyramid + gender donut
   const bandCount=AGE_BANDS.map(b=>({k:b.k,m:men.filter(r=>ageBand(r.age)===b.k).length,w:women.filter(r=>ageBand(r.age)===b.k).length}));
   const mx=Math.max(1,...bandCount.flatMap(b=>[b.m,b.w]));
-  h+=`<div class="grid row2" style="margin-top:16px"><div class="card"><h2>年齡層 × 性別分布</h2>
+  h+=`<div class="sec"><span>人員結構</span><small>年齡、性別、年資與協會會員</small></div><div class="grid row2"><div class="card"><h2>年齡層 × 性別分布</h2>
    <div class="legend"><span><i style="background:var(--navy)"></i>男性</span><span><i style="background:var(--orange-deep)"></i>女性</span><span>點選長條可篩選</span></div>
    <div class="pyr"><div class="hdr m">男性</div><div></div><div class="hdr">女性</div>
    ${bandCount.map(b=>`
@@ -344,7 +350,7 @@ function render(){
   const lv=levels.map(l=>({k:l,n:D.filter(r=>r.level===l).length}));
   const st=STATUS_ORDER.map(s=>({k:s,n:D.filter(r=>r.status===s).length})).filter(x=>x.n||ALL.some(r=>r.status===x.k));
   const ends=[...new Set(D.map(r=>r.certEnd).filter(Boolean))].sort((a,b)=>a-b).map(y=>({k:y,n:D.filter(r=>r.certEnd===y).length}));
-  h+=`<div class="grid row3" style="margin-top:16px">
+  h+=`<div class="sec"><span>認證狀態</span><small>分級、證書狀態與效期</small></div><div class="grid row3">
    <div class="card"><h2>分級人數</h2><p class="sub">SP0 基礎訓練 → SP3 訓練師</p>${hbars(lv,N,x=>LEVEL_COLOR[x.k]||'#C9B9A6','level',x=>LEVEL_DESC[x.k]||'')}</div>
    <div class="card"><h2>證書狀態</h2><p class="sub">台灣醫學教育學會 SP 認證</p>${hbars(st,N,x=>STATUS_COLOR[x.k]||'#8A8178','status')}</div>
    <div class="card"><h2>認證效期到期年 <span class="tag">民國</span></h2><p class="sub">${ROC} 年到期者需於年底前展延</p>${hbars(ends.map(e=>({k:e.k+' 年',n:e.n,y:e.k})),N,x=>x.y<ROC?'#9C2F25':x.y===ROC?'#C77700':'#1F2B4D',null)}</div>
@@ -352,7 +358,7 @@ function render(){
 
   // Threshold card + table
   const newN=newThisYear.length;
-  h+=`<div class="card goal" style="margin-top:16px"><h2>3-1 合標準檢核參考</h2><p class="sub">以學會認證起始年 = ${ROC} 年者視為本年度取得或展延認證；新訓／展延之區分請以年度培訓名冊確認</p>
+  h+=`<div class="sec"><span>評鑑檢核與名冊</span></div><div class="card goal"><h2>3-1 合標準檢核參考</h2><p class="sub">以學會認證起始年 = ${ROC} 年者視為本年度取得或展延認證；新訓／展延之區分請以年度培訓名冊確認</p>
     <ul>
      <li><span>${ROC} 年取得／展延認證${badge(newN>=10)}</span><b>${newN}</b></li>
      <li><span>其中 60 歲以下男性${badge(male60New>=2)}</span><b>${male60New}</b></li>
