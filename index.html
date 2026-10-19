@@ -19,15 +19,41 @@
   --ok:#2F6B4F; --warn:#C77700; --bad:#9C2F25; --gray:#8A8178;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow-x:hidden}
 body{font-family:'Noto Sans TC',system-ui,sans-serif;background:var(--orange);color:var(--ink);font-size:15px;line-height:1.5;padding:0 16px 40px}
 .wrap{max-width:1240px;margin:0 auto}
 
-/* Header */
-header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;padding:28px 4px 20px}
-.brand small{display:inline-block;background:var(--navy);color:#fff;font-weight:700;font-size:13px;padding:3px 12px;border-radius:999px;letter-spacing:.05em}
-.brand h1{font-weight:900;font-size:clamp(26px,4vw,40px);line-height:1.15;color:#fff;margin-top:10px;letter-spacing:.02em}
-.brand h1 span{display:inline-block;background:var(--cream);color:var(--orange-deep);padding:0 10px;border-radius:10px;margin-right:6px}
-.meta{display:flex;align-items:center;gap:10px;color:#fff;font-size:13px}
+/* Hero 主視覺 */
+.hero{position:relative;padding:34px 0 22px;display:grid;grid-template-columns:1.15fr 1fr;gap:22px 28px;align-items:center}
+.hero::before{content:"";position:absolute;right:-60px;top:-40px;width:360px;height:360px;border-radius:50%;background:rgba(255,244,227,.14);pointer-events:none}
+.hero::after{content:"";position:absolute;left:-90px;bottom:90px;width:220px;height:220px;border-radius:50%;border:26px solid rgba(31,43,77,.08);pointer-events:none}
+.hero-l,.hero-r,.route{position:relative;z-index:1}
+.chip{display:inline-block;background:var(--navy);color:#fff;font-weight:700;font-size:13px;padding:4px 14px;border-radius:999px;letter-spacing:.05em}
+.hero h1{font-weight:900;font-size:clamp(34px,5.6vw,64px);line-height:1.12;color:#fff;margin:14px 0 8px;letter-spacing:.03em;text-shadow:4px 4px 0 var(--navy)}
+.hero h1 .hl{display:inline-block;background:var(--cream);color:var(--orange-deep);text-shadow:none;padding:0 14px;border-radius:14px;margin-right:10px;box-shadow:4px 4px 0 var(--navy)}
+.hero .en{font-weight:900;font-size:13px;letter-spacing:.32em;color:var(--navy)}
+.meta{display:flex;align-items:center;gap:10px;color:#fff;font-size:13px;margin-top:16px;flex-wrap:wrap}
+.meta #updated{background:rgba(31,43,77,.18);border-radius:999px;padding:5px 12px;font-weight:700}
+.hero-r{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.hs{background:var(--cream);border-radius:22px;padding:16px 14px 14px;box-shadow:5px 5px 0 var(--navy);text-align:center}
+.hs .t{font-size:13px;font-weight:900;color:#fff;background:var(--orange-deep);border-radius:999px;display:inline-block;padding:2px 12px}
+.hs .n{font-size:clamp(34px,4.2vw,50px);font-weight:900;color:var(--navy);line-height:1.1;margin-top:8px;font-variant-numeric:tabular-nums}
+.hs .n small{font-size:16px;margin-left:2px}
+.hs .d{font-size:12px;color:var(--ink-2);margin-top:2px}
+.route{grid-column:1/-1;background:var(--cream);border-radius:24px;padding:18px 22px 20px;box-shadow:5px 5px 0 var(--navy)}
+.route h3{font-size:15px;font-weight:900;color:var(--navy);margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.route h3 span{font-size:12px;font-weight:500;color:var(--ink-2)}
+.stops{display:grid;grid-template-columns:repeat(4,1fr);position:relative}
+.stops::before{content:"";position:absolute;left:12.5%;right:12.5%;top:27px;border-top:4px dashed var(--orange-deep)}
+.stop{text-align:center;position:relative;cursor:pointer;padding:0 6px}
+.stop .dot{width:58px;height:58px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;color:#fff;border:4px solid var(--cream);box-shadow:0 0 0 3px var(--navy);position:relative}
+.stop:hover .dot{transform:translateY(-2px)}
+.stop .nm{font-size:13px;font-weight:700;color:var(--navy);margin-top:8px}
+.stop .c{font-size:28px;font-weight:900;color:var(--navy);line-height:1.1;font-variant-numeric:tabular-nums}
+.stop .c small{font-size:13px;margin-left:2px}
+.stop .p{font-size:12px;color:var(--ink-2)}
+@media (max-width:900px){.hero{grid-template-columns:1fr}}
+@media (max-width:560px){.hero-r{grid-template-columns:1fr 1fr 1fr;gap:8px}.hs{padding:12px 6px}.hs .t{font-size:11px;padding:2px 8px}.stops{grid-template-columns:repeat(2,1fr);row-gap:18px}.stops::before{display:none}}
 .btn{font:inherit;font-weight:700;font-size:13px;border:0;border-radius:999px;padding:8px 16px;background:var(--navy);color:#fff;cursor:pointer}
 .btn:hover{background:var(--navy-2)}
 .demo{background:var(--cream);color:var(--orange-deep);border-radius:12px;padding:10px 14px;font-weight:700;font-size:13px;margin-bottom:14px;display:none}
@@ -43,10 +69,14 @@ header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-be
 
 /* Grid */
 .grid{display:grid;gap:16px}
-.kpis{grid-template-columns:repeat(6,1fr)}
+.kpis{grid-template-columns:repeat(4,1fr)}
 .row2{grid-template-columns:1.6fr 1fr}
 .row3{grid-template-columns:repeat(3,1fr)}
-@media (max-width:1000px){.kpis{grid-template-columns:repeat(3,1fr)}.row2,.row3{grid-template-columns:1fr}}
+.row2b{grid-template-columns:1fr 1fr}
+@media (max-width:1000px){.row2b{grid-template-columns:1fr}}
+.sec{color:#fff;font-weight:900;font-size:18px;margin:26px 0 12px;display:flex;align-items:center;gap:10px}
+.sec::after{content:"";flex:1;border-top:3px dashed rgba(255,244,227,.55)}
+@media (max-width:1000px){.kpis{grid-template-columns:repeat(2,1fr)}.row2,.row3{grid-template-columns:1fr}}
 @media (max-width:560px){.kpis{grid-template-columns:repeat(2,1fr)}}
 .card{background:var(--cream);border-radius:20px;padding:18px 20px;min-width:0}
 .card h2{font-size:16px;font-weight:900;color:var(--navy);display:flex;align-items:center;gap:8px;margin-bottom:12px}
@@ -133,16 +163,20 @@ footer{color:#fff;font-size:12px;margin-top:18px;opacity:.9}
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <div class="brand">
-      <small>奇美醫院｜教學部臨床技能中心</small>
-      <h1><span>SP</span>標準化病人人力儀表板</h1>
+  <section class="hero">
+    <div class="hero-l">
+      <span class="chip">奇美醫院｜教學部臨床技能中心</span>
+      <h1><span class="hl">SP</span>標準化病人<br>人力儀表板</h1>
+      <div class="en">STANDARDIZED PATIENT DASHBOARD</div>
+      <div class="meta"><span id="updated">資料載入中…</span><button class="btn" id="reload">重新整理</button></div>
     </div>
-    <div class="meta"><span id="updated">資料載入中…</span><button class="btn" id="reload">重新整理</button></div>
-  </header>
+    <div class="hero-r" id="heroStats"></div>
+    <div class="route" id="route"></div>
+  </section>
 
   <div class="demo" id="demo">目前顯示範例資料（名冊前 23 筆）。請於程式碼最上方 CONFIG.GAS_URL 填入 GAS 部署網址，即會讀取名冊全部資料。</div>
 
+  <div class="sec">數據總覽</div>
   <div class="filters">
     <div class="f"><label>性別</label><select id="fGender"><option value="">全部</option><option>男</option><option>女</option></select></div>
     <div class="f"><label>年齡層</label><select id="fAge"><option value="">全部</option></select></div>
@@ -179,7 +213,7 @@ const DEMO = [
  ['郭○金','女',47,'113-115','SP','SP1','符合','是',14],['楊○子','女',63,'115-117','SP','SP2','符合','是',12],
  ['林○如','女',43,'114-116','SPT','SP3','符合','是',13]
 ].map(([name,gender,age,certPeriod,role,level,status,member,years])=>{
-  const m=certPeriod.match(/(\d+)-(\d+)/);return{name,gender,age,certPeriod,certStart:+m[1],certEnd:+m[2],role,level,status,member,years};
+  const m=certPeriod.match(/(\d+)-(\d+)/);return{name,gender,age,certPeriod,certStart:+m[1],certEnd:+m[2],role,level,status,member,years,firstYear:115-years};
 });
 
 /* ========= 常數 ========= */
@@ -211,7 +245,22 @@ async function load(){
 
 /* ========= 篩選 ========= */
 function fillSelect(id,vals){const s=$(id),cur=s.value;s.length=1;vals.forEach(v=>s.add(new Option(v,v)));s.value=vals.includes(cur)?cur:''}
+function renderHero(){
+  const N=ALL.length,mem=ALL.filter(r=>r.member==='是').length;
+  const ys=ALL.map(r=>r.years).filter(v=>v!=null);const avgY=ys.length?(ys.reduce((a,b)=>a+b,0)/ys.length).toFixed(1):'—';
+  const maxY=ys.length?Math.max(...ys):'—';
+  $('#heroStats').innerHTML=`
+   <div class="hs"><span class="t">SP 總人數</span><div class="n">${N}<small>名</small></div><div class="d">有效認證 ${ALL.filter(r=>r.status==='符合').length} 名</div></div>
+   <div class="hs"><span class="t">協會會員</span><div class="n">${mem}<small>名</small></div><div class="d">占 ${pct(mem,N)}%</div></div>
+   <div class="hs"><span class="t">平均年資</span><div class="n">${avgY}<small>年</small></div><div class="d">最資深 ${maxY} 年</div></div>`;
+  const stops=[['SP0','基礎訓練','#C9B9A6'],['SP1','取得學會認證','#F4A46A'],['SP2','年演出 ≥ 3 次','#D9561A'],['SP3','SP 訓練師','#1F2B4D']];
+  $('#route').innerHTML=`<h3>SP 培育路線<span>完成基礎訓練 → 取得認證 → 持續演出 → 成為訓練師｜點選站點可篩選</span></h3>
+   <div class="stops">${stops.map(([k,nm,c])=>{const n=ALL.filter(r=>r.level===k).length;
+     return `<div class="stop" data-lv="${k}" data-tip="${k}｜${nm}：${n} 名"><div class="dot" style="background:${c}">${k}</div><div class="nm">${nm}</div><div class="c">${n}<small>名</small></div><div class="p">${pct(n,N)}%</div></div>`}).join('')}</div>`;
+  document.querySelectorAll('.stop').forEach(el=>el.addEventListener('click',()=>{setF('level',el.dataset.lv);document.querySelector('.sec').scrollIntoView({behavior:'smooth'})}));
+}
 function init(){
+  renderHero();
   fillSelect('#fAge',AGE_BANDS.map(b=>b.k));
   fillSelect('#fLevel',[...new Set(ALL.map(r=>r.level).filter(Boolean))].sort());
   fillSelect('#fStatus',STATUS_ORDER.filter(s=>ALL.some(r=>r.status===s)).concat([...new Set(ALL.map(r=>r.status))].filter(s=>s&&!STATUS_ORDER.includes(s))));
@@ -242,9 +291,13 @@ function render(){
   const male60New=newThisYear.filter(r=>r.gender==='男'&&r.age!=null&&r.age<60).length;
 
   // KPI
+  const mem=D.filter(r=>r.member==='是').length;
+  const ys=D.map(r=>r.years).filter(v=>v!=null);const avgY=ys.length?(ys.reduce((a,b)=>a+b,0)/ys.length).toFixed(1):'—';
   let h=`<div class="grid kpis">
    ${kpi('SP 總人數',N,'名','',`男 ${men.length}／女 ${women.length}`)}
    ${kpi('有效認證',valid.length,'名','',`占 ${pct(valid.length,N)}%`)}
+   ${kpi('協會會員',mem,'名','',`占 ${pct(mem,N)}%；非會員 ${D.filter(r=>r.member==='否').length} 名`)}
+   ${kpi('平均年資',avgY,'年','',ys.length?`範圍 ${Math.min(...ys)}～${Math.max(...ys)} 年`:'')}
    ${kpi('平均年齡',avgAge,'歲','',`60 歲以上 ${ages.filter(a=>a>=60).length} 名`)}
    ${kpi('SP 訓練師',spt,'名','','身分為 SPT')}
    ${kpi(`${ROC} 年底到期`,expiring,'名','',`認證效期至 ${ROC} 年`)}
@@ -268,6 +321,23 @@ function render(){
    <div class="dl"><div><i style="background:var(--navy)"></i>男性 <b>${men.length}</b><span>${mp}%</span></div>
    <div><i style="background:var(--orange-deep)"></i>女性 <b>${women.length}</b><span>${N?100-mp:0}%</span></div></div></div>
    <p class="sub" style="margin:14px 0 0">男性 SP 中，60 歲以下 ${men.filter(r=>r.age!=null&&r.age<60).length} 名、60 歲以上 ${men.filter(r=>r.age>=60).length} 名。</p></div></div>`;
+
+  // Seniority + membership
+  const YB=[{k:'未滿 5 年',lo:0,hi:4},{k:'5～9 年',lo:5,hi:9},{k:'10～14 年',lo:10,hi:14},{k:'15 年以上',lo:15,hi:999}];
+  const yb=YB.map(b=>({k:b.k,n:D.filter(r=>r.years!=null&&r.years>=b.lo&&r.years<=b.hi).length}));
+  const firstYears=[...new Set(D.map(r=>r.firstYear).filter(v=>v!=null))].sort((a,b)=>a-b);
+  const nonMem=D.filter(r=>r.member==='否').length, mp2=pct(mem,N);
+  const memValid=D.filter(r=>r.member==='是'&&r.status==='符合').length;
+  h+=`<div class="grid row2b" style="margin-top:16px">
+   <div class="card"><h2>SP 年資分布</h2><p class="sub">平均 ${avgY} 年；首次認證年度 ${firstYears.length?firstYears[0]+'～'+firstYears[firstYears.length-1]+' 年':'—'}</p>
+    ${hbars(yb,N,()=> '#1F2B4D',null)}
+    <div class="legend" style="margin:12px 0 0">${firstYears.map(y=>`<span><b style="color:var(--navy)">${y}</b> 年起 ${D.filter(r=>r.firstYear===y).length} 名</span>`).join('')}</div></div>
+   <div class="card"><h2>台灣標準化病人協會會員</h2><div class="donut-wrap">
+    <div class="donut" style="background:conic-gradient(var(--orange-deep) 0 ${mp2}%, #C9B9A6 ${mp2}% 100%)"><div class="c"><b>${mem}</b><span>名會員</span></div></div>
+    <div class="dl"><div><i style="background:var(--orange-deep)"></i>會員 <b>${mem}</b><span>${mp2}%</span></div>
+    <div><i style="background:#C9B9A6"></i>非會員 <b>${nonMem}</b><span>${pct(nonMem,N)}%</span></div></div></div>
+    <p class="sub" style="margin:14px 0 0">會員中有效認證 ${memValid} 名（${pct(memValid,mem)}%）。</p></div>
+  </div>`;
 
   // Level / Status / Cert end year
   const levels=['SP0','SP1','SP2','SP3'].concat([...new Set(D.map(r=>r.level))].filter(l=>l&&!['SP0','SP1','SP2','SP3'].includes(l)));
