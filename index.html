@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>標準化病人人力儀表板｜奇美醫院臨床技能中心</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --orange:#F07A2A;      /* 頁面底色（海報橘） */
+  --orange-deep:#D9561A; /* 女性／強調 */
+  --orange-soft:#FFD7B5;
+  --cream:#FFF4E3;       /* 色塊底 */
+  --cream-2:#FCE6CB;
+  --navy:#1F2B4D;        /* 男性／標題 */
+  --navy-2:#3E4C74;
+  --ink:#2A2620; --ink-2:#6B5E50; --line:#EBD3B5;
+  --ok:#2F6B4F; --warn:#C77700; --bad:#9C2F25; --gray:#8A8178;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans TC',system-ui,sans-serif;background:var(--orange);color:var(--ink);font-size:15px;line-height:1.5;padding:0 16px 40px}
+.wrap{max-width:1240px;margin:0 auto}
+
+/* Header */
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;padding:28px 4px 20px}
+.brand small{display:inline-block;background:var(--navy);color:#fff;font-weight:700;font-size:13px;padding:3px 12px;border-radius:999px;letter-spacing:.05em}
+.brand h1{font-weight:900;font-size:clamp(26px,4vw,40px);line-height:1.15;color:#fff;margin-top:10px;letter-spacing:.02em}
+.brand h1 span{display:inline-block;background:var(--cream);color:var(--orange-deep);padding:0 10px;border-radius:10px;margin-right:6px}
+.meta{display:flex;align-items:center;gap:10px;color:#fff;font-size:13px}
+.btn{font:inherit;font-weight:700;font-size:13px;border:0;border-radius:999px;padding:8px 16px;background:var(--navy);color:#fff;cursor:pointer}
+.btn:hover{background:var(--navy-2)}
+.demo{background:var(--cream);color:var(--orange-deep);border-radius:12px;padding:10px 14px;font-weight:700;font-size:13px;margin-bottom:14px;display:none}
+
+/* Filters */
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--navy);border-radius:18px;padding:12px 14px;margin-bottom:16px}
+.filters label{color:#C9D0E4;font-size:12px;font-weight:700}
+.filters select,.filters input{font:inherit;font-size:13px;border:0;border-radius:10px;padding:6px 10px;background:#fff;color:var(--ink);min-width:96px}
+.filters input{min-width:140px}
+.f{display:flex;align-items:center;gap:6px}
+.clear{margin-left:auto;background:var(--orange);}
+.clear:hover{background:var(--orange-deep)}
+
+/* Grid */
+.grid{display:grid;gap:16px}
+.kpis{grid-template-columns:repeat(6,1fr)}
+.row2{grid-template-columns:1.6fr 1fr}
+.row3{grid-template-columns:repeat(3,1fr)}
+@media (max-width:1000px){.kpis{grid-template-columns:repeat(3,1fr)}.row2,.row3{grid-template-columns:1fr}}
+@media (max-width:560px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.card{background:var(--cream);border-radius:20px;padding:18px 20px;min-width:0}
+.card h2{font-size:16px;font-weight:900;color:var(--navy);display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.card h2 .tag{font-size:11px;font-weight:700;background:var(--orange-deep);color:#fff;border-radius:999px;padding:1px 9px}
+.card .sub{font-size:12px;color:var(--ink-2);margin:-8px 0 12px}
+
+/* KPI */
+.kpi{position:relative;overflow:hidden}
+.kpi .lab{font-size:13px;font-weight:700;color:var(--ink-2)}
+.kpi .val{font-size:38px;font-weight:900;color:var(--navy);line-height:1.1;margin-top:4px;font-variant-numeric:tabular-nums}
+.kpi .val small{font-size:15px;font-weight:700;margin-left:2px}
+.kpi .note{font-size:12px;color:var(--ink-2);margin-top:4px}
+.kpi.hi{background:var(--navy)}
+.kpi.hi .lab,.kpi.hi .note{color:#C9D0E4}.kpi.hi .val{color:#fff}
+
+/* Legend */
+.legend{display:flex;gap:14px;font-size:12px;color:var(--ink-2);margin-bottom:10px;flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
+/* Pyramid */
+.pyr{display:grid;grid-template-columns:1fr 64px 1fr;row-gap:8px;align-items:center}
+.pyr .age{text-align:center;font-size:13px;font-weight:700;color:var(--navy)}
+.pyr .side{display:flex;align-items:center;gap:6px;height:30px;cursor:pointer}
+.pyr .side.m{justify-content:flex-end}
+.pyr .bar{height:100%;border-radius:6px;min-width:2px;transition:filter .15s}
+.pyr .side:hover .bar{filter:brightness(1.15)}
+.pyr .m .bar{background:var(--navy)}.pyr .w .bar{background:var(--orange-deep)}
+.pyr .n{font-size:13px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;min-width:18px}
+.pyr .m .n{text-align:right}
+.pyr .hdr{font-size:12px;font-weight:700;color:var(--ink-2)}
+.pyr .hdr.m{text-align:right}
+
+/* Donut */
+.donut-wrap{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.donut{width:150px;height:150px;border-radius:50%;position:relative;flex:none}
+.donut::after{content:"";position:absolute;inset:26px;background:var(--cream);border-radius:50%}
+.donut .c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1}
+.donut .c b{font-size:30px;font-weight:900;color:var(--navy);line-height:1}
+.donut .c span{font-size:12px;color:var(--ink-2)}
+.dl{display:flex;flex-direction:column;gap:10px;font-size:14px}
+.dl div{display:flex;align-items:baseline;gap:8px}
+.dl b{font-size:22px;font-weight:900;color:var(--navy);font-variant-numeric:tabular-nums}
+.dl i{width:12px;height:12px;border-radius:3px;display:inline-block}
+
+/* Horizontal bars */
+.hb{display:flex;flex-direction:column;gap:9px}
+.hb .r{display:grid;grid-template-columns:86px 1fr 64px;align-items:center;gap:8px;cursor:pointer}
+.hb .r:hover .b{filter:brightness(1.12)}
+.hb .k{font-size:13px;font-weight:700;color:var(--navy)}
+.hb .t{background:var(--cream-2);border-radius:6px;height:22px;overflow:hidden}
+.hb .b{height:100%;border-radius:6px}
+.hb .v{font-size:13px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+.hb .v small{color:var(--ink-2);font-weight:500}
+.hb .r.on .k{text-decoration:underline;text-underline-offset:3px}
+
+/* Threshold card */
+.goal{background:var(--navy);color:#fff}
+.goal h2{color:#fff}
+.goal .sub{color:#C9D0E4}
+.goal ul{list-style:none;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media (max-width:900px){.goal ul{grid-template-columns:1fr 1fr}}@media (max-width:480px){.goal ul{grid-template-columns:1fr}}
+.goal li{display:flex;justify-content:space-between;align-items:center;gap:8px;background:rgba(255,255,255,.08);border-radius:12px;padding:10px 12px;font-size:14px}
+.goal li b{font-size:22px;font-weight:900;font-variant-numeric:tabular-nums}
+.pill{font-size:11px;font-weight:700;border-radius:999px;padding:2px 9px;margin-left:8px}
+.pill.ok{background:#CDEBD9;color:#1D4D36}.pill.no{background:#FFD7B5;color:#7A2E07}
+
+/* Table */
+.tbl-wrap{overflow-x:auto;margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:760px}
+th{background:var(--navy);color:#fff;font-weight:700;text-align:left;padding:9px 10px;white-space:nowrap;cursor:pointer;user-select:none}
+th:first-child{border-radius:10px 0 0 10px}th:last-child{border-radius:0 10px 10px 0}
+th .s{opacity:.6;font-size:11px;margin-left:3px}
+td{padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+tr:hover td{background:var(--cream-2)}
+.st{font-size:12px;font-weight:700;border-radius:999px;padding:2px 10px;display:inline-block}
+.count{font-size:13px;color:var(--ink-2);margin-left:auto;font-weight:500}
+
+/* Tooltip */
+#tip{position:fixed;pointer-events:none;background:var(--navy);color:#fff;font-size:12px;padding:6px 10px;border-radius:8px;opacity:0;transition:opacity .1s;z-index:10;white-space:nowrap}
+footer{color:#fff;font-size:12px;margin-top:18px;opacity:.9}
+.loading{color:#fff;font-weight:700;padding:40px 0;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <small>奇美醫院｜教學部臨床技能中心</small>
+      <h1><span>SP</span>標準化病人人力儀表板</h1>
+    </div>
+    <div class="meta"><span id="updated">資料載入中…</span><button class="btn" id="reload">重新整理</button></div>
+  </header>
+
+  <div class="demo" id="demo">目前顯示範例資料（名冊前 23 筆）。請於程式碼最上方 CONFIG.GAS_URL 填入 GAS 部署網址，即會讀取名冊全部資料。</div>
+
+  <div class="filters">
+    <div class="f"><label>性別</label><select id="fGender"><option value="">全部</option><option>男</option><option>女</option></select></div>
+    <div class="f"><label>年齡層</label><select id="fAge"><option value="">全部</option></select></div>
+    <div class="f"><label>級數</label><select id="fLevel"><option value="">全部</option></select></div>
+    <div class="f"><label>證書狀態</label><select id="fStatus"><option value="">全部</option></select></div>
+    <div class="f"><label>身分</label><select id="fRole"><option value="">全部</option></select></div>
+    <div class="f"><label>搜尋</label><input id="fName" placeholder="姓名"></div>
+    <button class="btn clear" id="clear">清除篩選</button>
+  </div>
+
+  <div id="app"><div class="loading">資料載入中…</div></div>
+  <footer>資料來源：奇美標準化病人名冊（Google 試算表）。年齡依生日計算至今日；姓名已遮蔽，未輸出生日。</footer>
+</div>
+<div id="tip"></div>
+
+<script>
+/* ========= 設定 ========= */
+const CONFIG = {
+  GAS_URL: ''   // 例：https://script.google.com/macros/s/XXXXXXXX/exec
+};
+
+/* 範例資料（未設定 GAS_URL 時使用；姓名已遮蔽） */
+const DEMO = [
+ ['王○承','女',72,'110-112','SP','SP0','未符合','是',14],['黃○玲','女',63,'113-115','SP','SP2','符合','是',14],
+ ['康○安','女',69,'113-115','SPT','SP3','符合','是',14],['馮○芳','女',64,'113-115','SPT','SP3','符合','是',14],
+ ['楊○璧','女',71,'113-115','SP','SP2','符合','是',14],['詹○玲','女',64,'110-112','SP','SP0','待展延','是',14],
+ ['許○蘭','女',68,'113-115','SP','SP2','符合','是',14],['朱○月','女',69,'104-106','SP','SP0','已過效期','否',14],
+ ['葉○','女',65,'113-115','SP','SP2','符合','是',14],['洪○鶯','女',65,'113-115','SP','SP2','符合','是',14],
+ ['余○玲','女',62,'113-115','SP','SP2','符合','是',14],['盧○美','女',73,'104-106','SP','SP0','未符合','否',14],
+ ['周○玲','女',55,'113-115','SP','SP1','符合','是',14],['黃○婷','女',52,'113-115','SPT','SP3','符合','是',14],
+ ['鄭○之','女',43,'110-112','SP','SP1','待展延','是',14],['黃○玲','女',45,'115-117','SPT','SP3','符合','是',12],
+ ['唐○鎧','男',74,'110-111','SP','SP0','未符合','否',14],['鄧○嘉','男',65,'113-115','SP','SP2','符合','是',14],
+ ['林○宏','男',48,'113-115','SP','SP1','符合','是',14],['李○','男',47,'113-115','SP','SP1','符合','是',14],
+ ['郭○金','女',47,'113-115','SP','SP1','符合','是',14],['楊○子','女',63,'115-117','SP','SP2','符合','是',12],
+ ['林○如','女',43,'114-116','SPT','SP3','符合','是',13]
+].map(([name,gender,age,certPeriod,role,level,status,member,years])=>{
+  const m=certPeriod.match(/(\d+)-(\d+)/);return{name,gender,age,certPeriod,certStart:+m[1],certEnd:+m[2],role,level,status,member,years};
+});
+
+/* ========= 常數 ========= */
+const AGE_BANDS=[{k:'70 歲以上',lo:70,hi:200},{k:'60–69 歲',lo:60,hi:69},{k:'50–59 歲',lo:50,hi:59},{k:'40–49 歲',lo:40,hi:49},{k:'40 歲以下',lo:0,hi:39}];
+const ageBand=a=>a==null?'未填':(AGE_BANDS.find(b=>a>=b.lo&&a<=b.hi)||{}).k;
+const STATUS_ORDER=['符合','待展延','未符合','已過效期'];
+const STATUS_COLOR={'符合':'#2F6B4F','待展延':'#C77700','未符合':'#8A8178','已過效期':'#9C2F25'};
+const STATUS_BG={'符合':'#CDEBD9','待展延':'#FFE2B8','未符合':'#E9E3DC','已過效期':'#F6D2CC'};
+const LEVEL_COLOR={'SP0':'#C9B9A6','SP1':'#F4A46A','SP2':'#D9561A','SP3':'#1F2B4D'};
+const LEVEL_DESC={'SP0':'完成基礎訓練','SP1':'取得學會認證','SP2':'認證＋年演出≥3次','SP3':'標準化病人訓練師'};
+
+let ALL=[], ROC=new Date().getFullYear()-1911, sortKey='level', sortDir=1;
+const $=s=>document.querySelector(s);
+const F={gender:'',age:'',level:'',status:'',role:'',name:''};
+
+/* ========= 載入 ========= */
+function jsonp(url){return new Promise((res,rej)=>{const cb='__sp'+Date.now();const s=document.createElement('script');
+  const t=setTimeout(()=>{cleanup();rej(new Error('連線逾時'))},20000);
+  function cleanup(){clearTimeout(t);delete window[cb];s.remove()}
+  window[cb]=d=>{cleanup();res(d)};s.onerror=()=>{cleanup();rej(new Error('無法連線 GAS'))};
+  s.src=url+(url.includes('?')?'&':'?')+'callback='+cb+'&t='+Date.now();document.body.appendChild(s);})}
+async function load(){
+  $('#updated').textContent='資料載入中…';
+  if(!CONFIG.GAS_URL){ALL=DEMO;$('#demo').style.display='block';$('#updated').textContent='範例資料';init();return}
+  try{const d=await jsonp(CONFIG.GAS_URL);if(!d.ok)throw new Error(d.error);ALL=d.rows;ROC=d.rocYear||ROC;
+    $('#updated').textContent='更新：'+d.updated;init();}
+  catch(e){$('#app').innerHTML='<div class="loading">讀取失敗：'+e.message+'</div>';$('#updated').textContent='讀取失敗'}
+}
+
+/* ========= 篩選 ========= */
+function fillSelect(id,vals){const s=$(id),cur=s.value;s.length=1;vals.forEach(v=>s.add(new Option(v,v)));s.value=vals.includes(cur)?cur:''}
+function init(){
+  fillSelect('#fAge',AGE_BANDS.map(b=>b.k));
+  fillSelect('#fLevel',[...new Set(ALL.map(r=>r.level).filter(Boolean))].sort());
+  fillSelect('#fStatus',STATUS_ORDER.filter(s=>ALL.some(r=>r.status===s)).concat([...new Set(ALL.map(r=>r.status))].filter(s=>s&&!STATUS_ORDER.includes(s))));
+  fillSelect('#fRole',[...new Set(ALL.map(r=>r.role).filter(Boolean))].sort());
+  render();
+}
+const filtered=()=>ALL.filter(r=>(!F.gender||r.gender===F.gender)&&(!F.age||ageBand(r.age)===F.age)&&(!F.level||r.level===F.level)&&(!F.status||r.status===F.status)&&(!F.role||r.role===F.role)&&(!F.name||r.name.includes(F.name)));
+function setF(k,v){F[k]=F[k]===v?'':v;syncInputs();render()}
+function syncInputs(){$('#fGender').value=F.gender;$('#fAge').value=F.age;$('#fLevel').value=F.level;$('#fStatus').value=F.status;$('#fRole').value=F.role;$('#fName').value=F.name}
+[['#fGender','gender'],['#fAge','age'],['#fLevel','level'],['#fStatus','status'],['#fRole','role']].forEach(([id,k])=>$(id).addEventListener('change',e=>{F[k]=e.target.value;render()}));
+$('#fName').addEventListener('input',e=>{F.name=e.target.value.trim();render()});
+$('#clear').addEventListener('click',()=>{Object.keys(F).forEach(k=>F[k]='');syncInputs();render()});
+$('#reload').addEventListener('click',load);
+
+/* ========= 繪製 ========= */
+const pct=(a,b)=>b?Math.round(a/b*100):0;
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function render(){
+  const D=filtered(),N=D.length;
+  const men=D.filter(r=>r.gender==='男'),women=D.filter(r=>r.gender==='女');
+  const valid=D.filter(r=>r.status==='符合');
+  const ages=D.map(r=>r.age).filter(a=>a!=null);
+  const avgAge=ages.length?(ages.reduce((a,b)=>a+b,0)/ages.length).toFixed(1):'—';
+  const spt=D.filter(r=>r.role==='SPT').length;
+  const expiring=valid.filter(r=>r.certEnd===ROC).length;
+  const newThisYear=D.filter(r=>r.certStart===ROC);
+  const male60=valid.filter(r=>r.gender==='男'&&r.age!=null&&r.age<60).length;
+  const male60New=newThisYear.filter(r=>r.gender==='男'&&r.age!=null&&r.age<60).length;
+
+  // KPI
+  let h=`<div class="grid kpis">
+   ${kpi('SP 總人數',N,'名','',`男 ${men.length}／女 ${women.length}`)}
+   ${kpi('有效認證',valid.length,'名','',`占 ${pct(valid.length,N)}%`)}
+   ${kpi('平均年齡',avgAge,'歲','',`60 歲以上 ${ages.filter(a=>a>=60).length} 名`)}
+   ${kpi('SP 訓練師',spt,'名','','身分為 SPT')}
+   ${kpi(`${ROC} 年底到期`,expiring,'名','',`認證效期至 ${ROC} 年`)}
+   ${kpi('60 歲以下男性',male60,'名','hi','有效認證者')}
+  </div>`;
+
+  // Pyramid + gender donut
+  const bandCount=AGE_BANDS.map(b=>({k:b.k,m:men.filter(r=>ageBand(r.age)===b.k).length,w:women.filter(r=>ageBand(r.age)===b.k).length}));
+  const mx=Math.max(1,...bandCount.flatMap(b=>[b.m,b.w]));
+  h+=`<div class="grid row2" style="margin-top:16px"><div class="card"><h2>年齡層 × 性別分布</h2>
+   <div class="legend"><span><i style="background:var(--navy)"></i>男性</span><span><i style="background:var(--orange-deep)"></i>女性</span><span>點選長條可篩選</span></div>
+   <div class="pyr"><div class="hdr m">男性</div><div></div><div class="hdr">女性</div>
+   ${bandCount.map(b=>`
+     <div class="side m" data-g="男" data-a="${b.k}" data-tip="男性｜${b.k}：${b.m} 名"><span class="n">${b.m}</span><div class="bar" style="width:${b.m/mx*100}%"></div></div>
+     <div class="age">${b.k.replace(' 歲','').replace('歲','')}</div>
+     <div class="side w" data-g="女" data-a="${b.k}" data-tip="女性｜${b.k}：${b.w} 名"><div class="bar" style="width:${b.w/mx*100}%"></div><span class="n">${b.w}</span></div>`).join('')}
+   </div></div>`;
+  const mp=pct(men.length,N);
+  h+=`<div class="card"><h2>性別比例</h2><div class="donut-wrap">
+   <div class="donut" style="background:conic-gradient(var(--navy) 0 ${mp}%, var(--orange-deep) ${mp}% 100%)"><div class="c"><b>${N}</b><span>名 SP</span></div></div>
+   <div class="dl"><div><i style="background:var(--navy)"></i>男性 <b>${men.length}</b><span>${mp}%</span></div>
+   <div><i style="background:var(--orange-deep)"></i>女性 <b>${women.length}</b><span>${N?100-mp:0}%</span></div></div></div>
+   <p class="sub" style="margin:14px 0 0">男性 SP 中，60 歲以下 ${men.filter(r=>r.age!=null&&r.age<60).length} 名、60 歲以上 ${men.filter(r=>r.age>=60).length} 名。</p></div></div>`;
+
+  // Level / Status / Cert end year
+  const levels=['SP0','SP1','SP2','SP3'].concat([...new Set(D.map(r=>r.level))].filter(l=>l&&!['SP0','SP1','SP2','SP3'].includes(l)));
+  const lv=levels.map(l=>({k:l,n:D.filter(r=>r.level===l).length}));
+  const st=STATUS_ORDER.map(s=>({k:s,n:D.filter(r=>r.status===s).length})).filter(x=>x.n||ALL.some(r=>r.status===x.k));
+  const ends=[...new Set(D.map(r=>r.certEnd).filter(Boolean))].sort((a,b)=>a-b).map(y=>({k:y,n:D.filter(r=>r.certEnd===y).length}));
+  h+=`<div class="grid row3" style="margin-top:16px">
+   <div class="card"><h2>分級人數</h2><p class="sub">SP0 基礎訓練 → SP3 訓練師</p>${hbars(lv,N,x=>LEVEL_COLOR[x.k]||'#C9B9A6','level',x=>LEVEL_DESC[x.k]||'')}</div>
+   <div class="card"><h2>證書狀態</h2><p class="sub">台灣醫學教育學會 SP 認證</p>${hbars(st,N,x=>STATUS_COLOR[x.k]||'#8A8178','status')}</div>
+   <div class="card"><h2>認證效期到期年 <span class="tag">民國</span></h2><p class="sub">${ROC} 年到期者需於年底前展延</p>${hbars(ends.map(e=>({k:e.k+' 年',n:e.n,y:e.k})),N,x=>x.y<ROC?'#9C2F25':x.y===ROC?'#C77700':'#1F2B4D',null)}</div>
+  </div>`;
+
+  // Threshold card + table
+  const newN=newThisYear.length;
+  h+=`<div class="card goal" style="margin-top:16px"><h2>3-1 合標準檢核參考</h2><p class="sub">以學會認證起始年 = ${ROC} 年者視為本年度取得或展延認證；新訓／展延之區分請以年度培訓名冊確認</p>
+    <ul>
+     <li><span>${ROC} 年取得／展延認證${badge(newN>=10)}</span><b>${newN}</b></li>
+     <li><span>其中 60 歲以下男性${badge(male60New>=2)}</span><b>${male60New}</b></li>
+     <li><span>有效認證之 60 歲以下男性</span><b>${male60}</b></li>
+     <li><span>待展延／已過效期</span><b>${D.filter(r=>r.status==='待展延'||r.status==='已過效期').length}</b></li>
+    </ul>
+    <p class="sub" style="margin:12px 0 0">門檻：培訓 10 名並經學會認證（含新訓 ≥ 5 名）；新訓及展延者中 60 歲以下男性 ≥ 2 名。</p></div>
+   <div class="card" style="margin-top:16px"><h2>SP 名冊 <span class="count">${N} 筆・點選欄位標題可排序</span></h2><div class="tbl-wrap">${tableHTML(D)}</div></div>`;
+  $('#app').innerHTML=h;
+
+  // Interactions
+  document.querySelectorAll('.pyr .side').forEach(el=>el.addEventListener('click',()=>{
+    const same=F.gender===el.dataset.g&&F.age===el.dataset.a;F.gender=same?'':el.dataset.g;F.age=same?'':el.dataset.a;syncInputs();render()}));
+  document.querySelectorAll('.hb .r[data-f]').forEach(el=>el.addEventListener('click',()=>setF(el.dataset.f,el.dataset.v)));
+  document.querySelectorAll('th[data-k]').forEach(el=>el.addEventListener('click',()=>{const k=el.dataset.k;sortDir=sortKey===k?-sortDir:1;sortKey=k;render()}));
+  bindTips();
+}
+function kpi(lab,val,unit,cls,note){return `<div class="card kpi ${cls}"><div class="lab">${lab}</div><div class="val">${val}<small>${unit}</small></div><div class="note">${note}</div></div>`}
+function badge(ok){return `<span class="pill ${ok?'ok':'no'}">${ok?'✓ 達標':'未達'}</span>`}
+function hbars(items,N,color,fkey,desc){
+  const mx=Math.max(1,...items.map(i=>i.n));
+  return `<div class="hb">${items.map(i=>`<div class="r ${fkey&&F[fkey]===i.k?'on':''}" ${fkey?`data-f="${fkey}" data-v="${esc(i.k)}"`:''} data-tip="${esc(i.k)}${desc&&desc(i)?'｜'+desc(i):''}：${i.n} 名（${pct(i.n,N)}%）">
+    <span class="k">${esc(i.k)}</span><div class="t"><div class="b" style="width:${i.n/mx*100}%;background:${color(i)}"></div></div>
+    <span class="v">${i.n} <small>${pct(i.n,N)}%</small></span></div>`).join('')}</div>`;
+}
+const COLS=[['name','姓名'],['gender','性別'],['age','年齡'],['band','年齡層'],['role','身分'],['level','級數'],['certPeriod','認證效期'],['status','證書狀態'],['years','SP 年資'],['member','協會會員']];
+function tableHTML(D){
+  const rows=D.map(r=>({...r,band:ageBand(r.age)}));
+  rows.sort((a,b)=>{const x=a[sortKey],y=b[sortKey];if(x==null)return 1;if(y==null)return -1;return (typeof x==='number'?x-y:String(x).localeCompare(String(y),'zh-Hant'))*sortDir});
+  return `<table><thead><tr>${COLS.map(([k,l])=>`<th data-k="${k}">${l}<span class="s">${sortKey===k?(sortDir>0?'▲':'▼'):'↕'}</span></th>`).join('')}</tr></thead><tbody>
+  ${rows.map(r=>`<tr><td>${esc(r.name)}</td><td>${esc(r.gender)}</td><td class="num">${r.age??''}</td><td>${esc(r.band)}</td><td>${esc(r.role)}</td><td>${esc(r.level)}</td><td>${esc(r.certPeriod)}</td>
+   <td><span class="st" style="background:${STATUS_BG[r.status]||'#eee'};color:${STATUS_COLOR[r.status]||'#555'}">${esc(r.status)}</span></td><td class="num">${r.years??''}</td><td>${esc(r.member)}</td></tr>`).join('')}
+  </tbody></table>`;
+}
+function bindTips(){const tip=$('#tip');document.querySelectorAll('[data-tip]').forEach(el=>{
+  el.addEventListener('mousemove',e=>{tip.textContent=el.dataset.tip;tip.style.opacity=1;const x=Math.min(e.clientX+14,innerWidth-tip.offsetWidth-8);tip.style.left=x+'px';tip.style.top=(e.clientY+14)+'px'});
+  el.addEventListener('mouseleave',()=>tip.style.opacity=0)})}
+
+load();
+</script>
+</body>
+</html>
